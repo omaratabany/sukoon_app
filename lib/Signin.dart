@@ -1,36 +1,65 @@
 import 'package:flutter/material.dart';
 
-class Signin extends StatelessWidget {
+class Signin extends StatefulWidget {
   const Signin({super.key});
 
   @override
+  State<Signin> createState() => _SigninState();
+}
+
+class _SigninState extends State<Signin> {
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+  final _emailFocus = FocusNode();
+  final _passwordFocus = FocusNode();
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    _emailFocus.dispose();
+    _passwordFocus.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final TextEditingController emailController = TextEditingController();
-    final TextEditingController passwordController = TextEditingController();
+    final bottomInset = MediaQuery.viewInsetsOf(context).bottom;
+    final padBottom = 24.0 + bottomInset;
 
     return Scaffold(
+      resizeToAvoidBottomInset: true,
       backgroundColor: const Color(0xFF0D5C63),
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24),
+        child: SingleChildScrollView(
+          keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+          padding: EdgeInsets.fromLTRB(24, 24, 24, padBottom),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
+              SizedBox(height: MediaQuery.sizeOf(context).height * 0.06),
               const Text(
-                "Welcome Back",
+                'Welcome Back',
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 28,
                   fontWeight: FontWeight.bold,
                 ),
+                textAlign: TextAlign.center,
               ),
-              const SizedBox(height: 40),
+              const SizedBox(height: 36),
 
-              // Email
               TextField(
-                controller: emailController,
+                controller: _emailController,
+                focusNode: _emailFocus,
+                keyboardType: TextInputType.emailAddress,
+                autocorrect: false,
+                enableSuggestions: false,
+                textInputAction: TextInputAction.next,
+                onSubmitted: (_) =>
+                    FocusScope.of(context).requestFocus(_passwordFocus),
                 decoration: InputDecoration(
-                  hintText: "Email",
+                  hintText: 'Email',
                   filled: true,
                   fillColor: Colors.white,
                   border: OutlineInputBorder(
@@ -40,12 +69,15 @@ class Signin extends StatelessWidget {
               ),
               const SizedBox(height: 20),
 
-              // Password
               TextField(
-                controller: passwordController,
+                controller: _passwordController,
+                focusNode: _passwordFocus,
                 obscureText: true,
+                textInputAction: TextInputAction.done,
+                onSubmitted: (_) =>
+                    Navigator.pushReplacementNamed(context, '/home'),
                 decoration: InputDecoration(
-                  hintText: "Password",
+                  hintText: 'Password',
                   filled: true,
                   fillColor: Colors.white,
                   border: OutlineInputBorder(
@@ -53,18 +85,16 @@ class Signin extends StatelessWidget {
                   ),
                 ),
               ),
-              const SizedBox(height: 30),
+              const SizedBox(height: 28),
 
-              // Login Button
               ElevatedButton(
                 onPressed: () {
-                  // Navigate to Home
                   Navigator.pushReplacementNamed(context, '/home');
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFF44A1A0),
                   padding: const EdgeInsets.symmetric(
-                    horizontal: 80,
+                    horizontal: 24,
                     vertical: 15,
                   ),
                   shape: RoundedRectangleBorder(
@@ -72,7 +102,7 @@ class Signin extends StatelessWidget {
                   ),
                 ),
                 child: const Text(
-                  "Sign In",
+                  'Sign In',
                   style: TextStyle(fontSize: 16),
                 ),
               ),

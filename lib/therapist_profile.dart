@@ -250,6 +250,8 @@ class _TherapistProfileState extends State<TherapistProfile> {
                                     fontWeight: FontWeight.w700,
                                     color: Colors.white,
                                   ),
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
                                 ),
                                 const SizedBox(height: 6),
                                 Text(
@@ -259,6 +261,8 @@ class _TherapistProfileState extends State<TherapistProfile> {
                                     fontStyle: FontStyle.italic,
                                     color: Colors.white,
                                   ),
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
                                 ),
                                 const SizedBox(height: 6),
                                 Text(
@@ -268,6 +272,8 @@ class _TherapistProfileState extends State<TherapistProfile> {
                                     fontStyle: FontStyle.italic,
                                     color: Colors.white,
                                   ),
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
                                 ),
                               ],
                             ),
@@ -280,50 +286,36 @@ class _TherapistProfileState extends State<TherapistProfile> {
                     // Personal information
                     _sectionCard(
                       title: 'Personal information',
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: _buildInfoItem(
-                              'Education',
-                              _getCertificate(),
-                            ),
-                          ),
-                          Expanded(
-                            child: _buildInfoItem(
-                              'Extra knowledge',
-                              _getSpecialty(),
-                            ),
-                          ),
-                          Expanded(child: _buildInfoItem('Email', _getEmail())),
-                        ],
-                      ),
+                      child: _responsiveInfoFields(context, [
+                        _buildInfoItem(
+                          'Education',
+                          _getCertificate(),
+                        ),
+                        _buildInfoItem(
+                          'Extra knowledge',
+                          _getSpecialty(),
+                        ),
+                        _buildInfoItem('Email', _getEmail()),
+                      ]),
                     ),
                     const SizedBox(height: 16),
 
                     // History
                     _sectionCard(
                       title: 'History',
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: _buildInfoItem(
-                              'Bookings',
-                              '${_getTotalBookings()} Total bookings',
-                            ),
-                          ),
-                          Expanded(
-                            child: _buildInfoItem('Language', _getLanguage()),
-                          ),
-                          Expanded(
-                            child: _buildInfoItem(
-                              'Joining Date',
-                              _appointments.isNotEmpty
-                                  ? _formatDate(_appointments.first['date'])
-                                  : '—',
-                            ),
-                          ),
-                        ],
-                      ),
+                      child: _responsiveInfoFields(context, [
+                        _buildInfoItem(
+                          'Bookings',
+                          '${_getTotalBookings()} Total bookings',
+                        ),
+                        _buildInfoItem('Language', _getLanguage()),
+                        _buildInfoItem(
+                          'Joining Date',
+                          _appointments.isNotEmpty
+                              ? _formatDate(_appointments.first['date'])
+                              : '—',
+                        ),
+                      ]),
                     ),
                     const SizedBox(height: 24),
 
@@ -366,6 +358,33 @@ class _TherapistProfileState extends State<TherapistProfile> {
 
   // ── Widgets ───────────────────────────────────────────────────────────────────
 
+  Widget _responsiveInfoFields(BuildContext context, List<Widget> items) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        if (constraints.maxWidth >= 420) {
+          return Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              for (int i = 0; i < items.length; i++) ...[
+                Expanded(child: items[i]),
+                if (i < items.length - 1) const SizedBox(width: 12),
+              ],
+            ],
+          );
+        }
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            for (int i = 0; i < items.length; i++) ...[
+              items[i],
+              if (i < items.length - 1) const SizedBox(height: 16),
+            ],
+          ],
+        );
+      },
+    );
+  }
+
   Widget _sectionCard({required String title, required Widget child}) {
     return Container(
       decoration: BoxDecoration(
@@ -407,6 +426,9 @@ class _TherapistProfileState extends State<TherapistProfile> {
         Text(
           value,
           style: const TextStyle(fontSize: 13, color: Color(0xFF44A1A0)),
+          softWrap: true,
+          maxLines: 6,
+          overflow: TextOverflow.ellipsis,
         ),
       ],
     );

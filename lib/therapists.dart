@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'therapist_profile.dart'; // Import the profile page
 
 class Therapists extends StatefulWidget {
@@ -54,6 +53,12 @@ class _TherapistsPageState extends State<Therapists> {
     }
   }
 
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
   void _showMessage(String message, {bool isError = false}) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
@@ -70,14 +75,12 @@ class _TherapistsPageState extends State<Therapists> {
       backgroundColor: const Color(0xFFFFFFFA),
       body: Column(
         children: [
-          // Navbar matching PHP design
           Container(
             height: 59,
             color: const Color(0xFF0D5C63),
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Row(
               children: [
-                // Logo
                 Image.asset(
                   'lib/images/logo_2.png',
                   height: 40,
@@ -96,7 +99,6 @@ class _TherapistsPageState extends State<Therapists> {
                 ),
                 const SizedBox(width: 16),
 
-                // Search bar
                 Expanded(
                   child: Container(
                     height: 36,
@@ -107,14 +109,10 @@ class _TherapistsPageState extends State<Therapists> {
                     child: TextField(
                       controller: _searchController,
                       onChanged: (value) {
-                        // You can implement search here
                         if (value.isEmpty) {
                           _fetchTherapists();
                         } else {
-                          // Filter therapists locally
-                          setState(() {
-                            // This is just UI filtering - you might want API search
-                          });
+                          setState(() {});
                         }
                       },
                       style: const TextStyle(color: Colors.white, fontSize: 13),
@@ -129,7 +127,6 @@ class _TherapistsPageState extends State<Therapists> {
                 ),
                 const SizedBox(width: 16),
 
-                // Hamburger menu
                 GestureDetector(
                   onTap: () {
                     _showMessage('Menu clicked');
@@ -149,7 +146,6 @@ class _TherapistsPageState extends State<Therapists> {
             ),
           ),
 
-          // Main content
           Expanded(
             child:
                 _isLoading
@@ -184,11 +180,9 @@ class _TherapistsPageState extends State<Therapists> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          // About + Reviews row
                           Row(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              // About box
                               Expanded(
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -215,74 +209,85 @@ class _TherapistsPageState extends State<Therapists> {
                               ),
                               const SizedBox(width: 20),
 
-                              // Reviews panel
-                              Container(
-                                width: 268,
-                                padding: const EdgeInsets.all(14),
-                                decoration: BoxDecoration(
-                                  color: const Color(
-                                    0xFF78CDD7,
-                                  ).withOpacity(0.5),
-                                  borderRadius: BorderRadius.circular(20),
-                                ),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    const Text(
-                                      "Patient's reviews:",
-                                      style: TextStyle(
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.w700,
-                                        color: Color(0xFF0D5C63),
+                              Flexible(
+                                child: Container(
+                                  constraints: const BoxConstraints(
+                                    maxWidth: 268,
+                                  ),
+                                  padding: const EdgeInsets.all(14),
+                                  decoration: BoxDecoration(
+                                    color: const Color(
+                                      0xFF78CDD7,
+                                    ).withOpacity(0.5),
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      const Text(
+                                        "Patient's reviews:",
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.w700,
+                                          color: Color(0xFF0D5C63),
+                                        ),
                                       ),
-                                    ),
-                                    const SizedBox(height: 10),
-                                    Container(
-                                      padding: const EdgeInsets.all(10),
-                                      decoration: BoxDecoration(
-                                        color: Colors.white.withOpacity(0.5),
-                                        borderRadius: BorderRadius.circular(10),
-                                      ),
-                                      child: Row(
-                                        children: [
-                                          Container(
-                                            width: 32,
-                                            height: 32,
-                                            decoration: const BoxDecoration(
-                                              color: Color(0xFF0D5C63),
-                                              shape: BoxShape.circle,
-                                            ),
+                                      const SizedBox(height: 10),
+                                      Container(
+                                        padding: const EdgeInsets.all(10),
+                                        decoration: BoxDecoration(
+                                          color: Colors.white.withOpacity(0.5),
+                                          borderRadius: BorderRadius.circular(
+                                            10,
                                           ),
-                                          const SizedBox(width: 10),
-                                          const Expanded(
-                                            child: Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                Text(
-                                                  'The help was amazing and very comforting',
-                                                  style: TextStyle(
-                                                    fontSize: 8,
-                                                    fontStyle: FontStyle.italic,
-                                                    color: Color(0xFF0D5C63),
-                                                  ),
-                                                ),
-                                                SizedBox(height: 2),
-                                                Text(
-                                                  'Sunday, 11 November 2025  9:00 PM',
-                                                  style: TextStyle(
-                                                    fontSize: 6,
-                                                    fontStyle: FontStyle.italic,
-                                                    color: Color(0xFF0D5C63),
-                                                  ),
-                                                ),
-                                              ],
+                                        ),
+                                        child: Row(
+                                          children: [
+                                            Container(
+                                              width: 32,
+                                              height: 32,
+                                              decoration: const BoxDecoration(
+                                                color: Color(0xFF0D5C63),
+                                                shape: BoxShape.circle,
+                                              ),
                                             ),
-                                          ),
-                                        ],
+                                            const SizedBox(width: 10),
+                                            const Expanded(
+                                              child: Column(
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
+                                                children: [
+                                                  Text(
+                                                    'The help was amazing and very comforting',
+                                                    style: TextStyle(
+                                                      fontSize: 8,
+                                                      fontStyle:
+                                                          FontStyle.italic,
+                                                      color: Color(
+                                                        0xFF0D5C63,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  SizedBox(height: 2),
+                                                  Text(
+                                                    'Sunday, 11 November 2025  9:00 PM',
+                                                    style: TextStyle(
+                                                      fontSize: 6,
+                                                      fontStyle:
+                                                          FontStyle.italic,
+                                                      color: Color(
+                                                        0xFF0D5C63,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ],
+                                        ),
                                       ),
-                                    ),
-                                  ],
+                                    ],
+                                  ),
                                 ),
                               ),
                             ],
@@ -307,7 +312,7 @@ class _TherapistsPageState extends State<Therapists> {
                                 gridDelegate:
                                     const SliverGridDelegateWithFixedCrossAxisCount(
                                       crossAxisCount: 2,
-                                      childAspectRatio: 0.85,
+                                      childAspectRatio: 0.82,
                                       crossAxisSpacing: 16,
                                       mainAxisSpacing: 16,
                                     ),
@@ -319,7 +324,6 @@ class _TherapistsPageState extends State<Therapists> {
                                   final hasAppointments =
                                       appointments.isNotEmpty;
 
-                                  // Get first appointment for display
                                   final firstApp =
                                       hasAppointments
                                           ? appointments.first
@@ -331,7 +335,6 @@ class _TherapistsPageState extends State<Therapists> {
                                           ? '${firstApp['fee']} EGP'
                                           : '— EGP';
 
-                                  // Get initials for avatar
                                   final firstName =
                                       therapist['firstname'] ?? '';
                                   final lastName = therapist['lastname'] ?? '';
@@ -458,7 +461,7 @@ class _TherapistsPageState extends State<Therapists> {
             ),
             const SizedBox(height: 4),
 
-            // Show up to 2 appointments
+            // Show up to 2 appointments (taller cards use more vertical space)
             ...appointments
                 .take(2)
                 .map<Widget>(
@@ -505,7 +508,7 @@ class _TherapistsPageState extends State<Therapists> {
             ),
           ],
 
-          const Spacer(),
+          const SizedBox(height: 10),
 
           // Buttons
           Row(
@@ -599,7 +602,7 @@ class _TherapistsPageState extends State<Therapists> {
 
   Widget _buildApptRow(String label, String value) {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           label,
@@ -610,12 +613,18 @@ class _TherapistsPageState extends State<Therapists> {
             color: Colors.white,
           ),
         ),
-        Text(
-          value,
-          style: const TextStyle(
-            fontSize: 7,
-            fontStyle: FontStyle.italic,
-            color: Colors.white,
+        const SizedBox(width: 6),
+        Expanded(
+          child: Text(
+            value,
+            textAlign: TextAlign.end,
+            style: const TextStyle(
+              fontSize: 7,
+              fontStyle: FontStyle.italic,
+              color: Colors.white,
+            ),
+            maxLines: 3,
+            overflow: TextOverflow.ellipsis,
           ),
         ),
       ],

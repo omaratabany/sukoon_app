@@ -613,13 +613,14 @@ class _BookingCard extends StatelessWidget {
             const Divider(height: 1, color: Color(0xFFE0F2F1)),
             const SizedBox(height: 14),
 
-            // Info row
-            Row(
+            // Info row (wraps on narrow widths to avoid overflow)
+            Wrap(
+              spacing: 12,
+              runSpacing: 8,
+              crossAxisAlignment: WrapCrossAlignment.center,
               children: [
                 _InfoChip(icon: Icons.calendar_today_rounded, label: date),
-                const SizedBox(width: 12),
-                _InfoChip(icon: Icons.attach_money_rounded, label: "$fee EGP"),
-                const SizedBox(width: 12),
+                _InfoChip(icon: Icons.attach_money_rounded, label: '$fee EGP'),
                 _InfoChip(icon: Icons.timer_outlined, label: duration),
               ],
             ),
@@ -646,13 +647,17 @@ class _InfoChip extends StatelessWidget {
       children: [
         Icon(icon, size: 14, color: const Color(0xFF247B7B)),
         const SizedBox(width: 4),
-        Text(
-          label,
-          style: const TextStyle(
-            color: Color(0xFF0D5C63),
-            fontFamily: 'Inter',
-            fontSize: 12,
-            fontWeight: FontWeight.w500,
+        Flexible(
+          child: Text(
+            label,
+            style: const TextStyle(
+              color: Color(0xFF0D5C63),
+              fontFamily: 'Inter',
+              fontSize: 12,
+              fontWeight: FontWeight.w500,
+            ),
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
           ),
         ),
       ],
