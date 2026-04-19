@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-//import 'package:http/http.dart' as http;
+import 'package:http/http.dart' as http;
 import 'dart:convert';
-
-import 'Signin.dart';
 
 class Signup extends StatefulWidget {
   const Signup({super.key});
@@ -53,52 +51,41 @@ class _SignupState extends State<Signup> {
 
     setState(() => _isLoading = true);
 
+    final url = "http://10.0.2.2/sukoon_website/user/signup.php";
+
     try {
-      final response = await http
-          .post(
-            Uri.parse(
-              "http://169.254.23.133/16/sukoon_website/user/signup.php",
-            ), //
-            headers: {
-              "Content-Type": "application/x-www-form-urlencoded", //
-            },
-            body: {
-              "firstname": _firstname.text.trim(),
-              "lastname": _lastname.text.trim(),
-              "username": _username.text.trim(),
-              "age": _age.text.trim(),
-              "phone_number": _phone.text.trim(),
-              "gender": _selectedGender ?? "",
-              "location": _location.text.trim(),
-              "email": _email.text.trim(),
-              "password": _password.text,
-            },
-          )
-          .timeout(const Duration(seconds: 10)); // ✅ ADDED
-
-      print("RESPONSE: ${response.body}"); // ✅ DEBUG
-
-      final data = jsonDecode(response.body);
+      final response = await http.post(
+        Uri.parse(url),
+        body: {
+          "firstname": _firstname.text.trim(),
+          "lastname": _lastname.text.trim(),
+          "username": _username.text.trim(),
+          "age": _age.text.trim(),
+          "phone_number": _phone.text.trim(),
+          "gender": _selectedGender!,
+          "location": _location.text.trim(),
+          "email": _email.text.trim(),
+          "password": _password.text,
+        },
+      );
 
       if (!mounted) return;
 
-      if (response.statusCode == 200 && data["status"] == "success") {
+      final data = jsonDecode(response.body);
+
+      if (data["status"] == "success") {
         _showSnackbar("Account created! Please sign in.", isError: false);
 
         await Future.delayed(const Duration(seconds: 1));
 
         if (!mounted) return;
 
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (_) => const Signin()),
-        );
+        Navigator.pushReplacementNamed(context, '/signin');
       } else {
         _showSnackbar(data["message"] ?? "Signup failed", isError: true);
       }
     } catch (e) {
-      print("ERROR: $e"); // ✅ DEBUG
-      _showSnackbar("Connection error. Please try again.", isError: true);
+      _showSnackbar("Connection error", isError: true);
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
@@ -108,11 +95,7 @@ class _SignupState extends State<Signup> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message),
-        backgroundColor: isError
-            ? Colors.red.shade700
-            : const Color(0xFF0D5C63),
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        backgroundColor: isError ? Colors.red : const Color(0xFF0D5C63),
       ),
     );
   }
@@ -123,334 +106,101 @@ class _SignupState extends State<Signup> {
       backgroundColor: const Color(0xFFFFFFFA),
       body: Column(
         children: [
-          // ── TOP: Gradient header with logo (matches Figma Rectangle 22) ──
           Container(
             width: double.infinity,
-            height: 260,
+            height: 220,
             decoration: const BoxDecoration(
               gradient: LinearGradient(
+                colors: [
+                  Color(0xFF0D5C63),
+                  Color(0xFF247B7B),
+                  Color(0xFF44A1A0),
+                ],
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
-                colors: [
-                  Color(0xFF0D5C63), // top
-                  Color(0xFF247B7B), // middle
-                  Color(0xFF44A1A0), // bottom
-                ],
-                stops: [0.02, 0.47, 0.92],
               ),
             ),
-            child: SafeArea(
-              child: Center(
-                child: Image.asset(
-                  "images/logo_white.png",
-                  errorBuilder: (context, error, stackTrace) {
-                    return Text(
-                      "Error: $error",
-                    ); // this will show you the exact problem
-                  },
-                  width: 187,
-                  height: 187,
-                  fit: BoxFit.contain,
-                ),
+            child: const Center(
+              child: Text(
+                "Create Account",
+                style: TextStyle(color: Colors.white, fontSize: 26),
               ),
             ),
           ),
 
-          // ── BOTTOM: Scrollable form ──
           Expanded(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.fromLTRB(24, 20, 24, 30),
+              padding: const EdgeInsets.all(20),
               child: Form(
                 key: _form,
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    // "Sign Up" title
-                    const Text(
-                      "Sign Up",
-                      style: TextStyle(
-                        fontFamily: 'Inter',
-                        fontSize: 28,
-                        fontWeight: FontWeight.w700,
-                        color: Color(0xFF0D5C63),
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-
-                    // Email — full width
+                    _buildField(_email, "Email"),
+                    _buildField(_firstname, "First Name"),
+                    _buildField(_lastname, "Last Name"),
+                    _buildField(_username, "Username"),
                     _buildField(
-                      controller: _email,
-                      label: "Email",
-                      keyboardType: TextInputType.emailAddress,
-                      validator: (v) {
-                        if (v!.isEmpty) return "Required";
-                        if (!v.contains("@")) return "Enter a valid email";
-                        return null;
-                      },
+                      _age,
+                      "Age",
+                      keyboardType: TextInputType.number,
                     ),
-                    const SizedBox(height: 12),
+                    _buildField(_phone, "Phone"),
+                    _buildField(_location, "Location"),
 
-                    // First Name | Last Name
-                    Row(
-                      children: [
-                        Expanded(
-                          child: _buildField(
-                            controller: _firstname,
-                            label: "First Name",
-                            validator: (v) => v!.isEmpty ? "Required" : null,
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: _buildField(
-                            controller: _lastname,
-                            label: "Last Name",
-                            validator: (v) => v!.isEmpty ? "Required" : null,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: 10),
 
-                    // Username | Age
-                    Row(
-                      children: [
-                        Expanded(
-                          child: _buildField(
-                            controller: _username,
-                            label: "Username",
-                            validator: (v) => v!.isEmpty ? "Required" : null,
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: _buildField(
-                            controller: _age,
-                            label: "Age",
-                            keyboardType: TextInputType.number,
-                            validator: (v) => v!.isEmpty ? "Required" : null,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 12),
-
-                    // Password — full width
-                    _buildPasswordField(
-                      controller: _password,
-                      label: "Password",
-                      obscure: _obscurePassword,
-                      toggleObscure: () =>
-                          setState(() => _obscurePassword = !_obscurePassword),
-                      validator: (v) {
-                        if (v!.isEmpty) return "Required";
-                        if (v.length < 6) return "Minimum 6 characters";
-                        return null;
-                      },
-                    ),
-                    const SizedBox(height: 12),
-
-                    // Confirm Password — full width
-                    _buildPasswordField(
-                      controller: _confirmPassword,
-                      label: "Confirm Password",
-                      obscure: _obscureConfirm,
-                      toggleObscure: () =>
-                          setState(() => _obscureConfirm = !_obscureConfirm),
-                      validator: (v) {
-                        if (v!.isEmpty) return "Required";
-                        if (v != _password.text)
-                          return "Passwords do not match";
-                        return null;
-                      },
-                    ),
-                    const SizedBox(height: 12),
-
-                    // Phone Number | Upload Image
-                    Row(
-                      children: [
-                        Expanded(
-                          child: _buildField(
-                            controller: _phone,
-                            label: "Phone Number",
-                            keyboardType: TextInputType.phone,
-                            validator: (v) => v!.isEmpty ? "Required" : null,
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        // "+ Upload Image" button (Figma Frame 17)
-                        Expanded(
-                          child: GestureDetector(
-                            onTap: () {
-                              // TODO: plug in image_picker package here
-                            },
-                            child: Container(
-                              height: 54,
-                              decoration: BoxDecoration(
-                                color: const Color(0xFFFFFFFA),
-                                border: Border.all(
-                                  color: const Color(0xFF247B7B),
-                                ),
-                                borderRadius: BorderRadius.circular(16),
-                              ),
-                              alignment: Alignment.centerLeft,
-                              padding: const EdgeInsets.only(left: 16),
-                              child: const Text(
-                                "+ Upload Image",
-                                style: TextStyle(
-                                  fontFamily: 'Inter',
-                                  fontSize: 14,
-                                  color: Color(0xFF0D5C63),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 12),
-
-                    // Location | Gender radio buttons
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Expanded(
-                          child: _buildField(
-                            controller: _location,
-                            label: "Location",
-                            validator: null, // optional
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-
-                        // Gender section (matches Figma Ellipse 45 & 46)
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const Text(
-                                "Gender:",
-                                style: TextStyle(
-                                  fontFamily: 'Roboto',
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w700,
-                                  color: Color(0xFF0D5C63),
-                                ),
-                              ),
-                              const SizedBox(height: 4),
-                              Row(
-                                children: [
-                                  // Female
-                                  Radio<String>(
-                                    value: "Female",
-                                    groupValue: _selectedGender,
-                                    activeColor: const Color(0xFF0D5C63),
-                                    materialTapTargetSize:
-                                        MaterialTapTargetSize.shrinkWrap,
-                                    onChanged: (v) =>
-                                        setState(() => _selectedGender = v),
-                                  ),
-                                  const Text(
-                                    "Female",
-                                    style: TextStyle(
-                                      fontFamily: 'Roboto',
-                                      fontSize: 13,
-                                      color: Color(0xFF0D5C63),
-                                    ),
-                                  ),
-                                  const SizedBox(width: 4),
-                                  // Male
-                                  Radio<String>(
-                                    value: "Male",
-                                    groupValue: _selectedGender,
-                                    activeColor: const Color(0xFF0D5C63),
-                                    materialTapTargetSize:
-                                        MaterialTapTargetSize.shrinkWrap,
-                                    onChanged: (v) =>
-                                        setState(() => _selectedGender = v),
-                                  ),
-                                  const Text(
-                                    "Male",
-                                    style: TextStyle(
-                                      fontFamily: 'Roboto',
-                                      fontSize: 13,
-                                      color: Color(0xFF0D5C63),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 24),
-
-                    // Create Account button (matches Figma Frame 7)
-                    SizedBox(
-                      width: double.infinity,
-                      height: 45,
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF247B7B),
-                          elevation: 0,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                        ),
-                        onPressed: _isLoading ? null : _signup,
-                        child: _isLoading
-                            ? const SizedBox(
-                                width: 20,
-                                height: 20,
-                                child: CircularProgressIndicator(
-                                  color: Colors.white,
-                                  strokeWidth: 2.5,
-                                ),
+                    DropdownButtonFormField<String>(
+                      value: _selectedGender,
+                      hint: const Text("Select Gender"),
+                      items:
+                          ["Male", "Female"]
+                              .map(
+                                (g) =>
+                                    DropdownMenuItem(value: g, child: Text(g)),
                               )
-                            : const Text(
-                                "Create Account",
-                                style: TextStyle(
-                                  fontFamily: 'Inter',
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w700,
-                                  color: Color(0xFFFFFFFA),
-                                ),
-                              ),
-                      ),
+                              .toList(),
+                      onChanged: (val) => setState(() => _selectedGender = val),
                     ),
-                    const SizedBox(height: 16),
 
-                    // "Already Have An Account? Sign In"
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const Text(
-                          "Already Have An Account? ",
-                          style: TextStyle(
-                            fontFamily: 'Inter',
-                            fontSize: 14,
-                            color: Color(0xFF0D5C63),
-                          ),
-                        ),
-                        GestureDetector(
-                          onTap: () {
-                            Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(builder: (_) => const Signin()),
-                            );
-                          },
-                          child: const Text(
-                            "Sign In",
-                            style: TextStyle(
-                              fontFamily: 'Inter',
-                              fontSize: 14,
-                              fontWeight: FontWeight.w600,
-                              color: Color(0xFF0D5C63),
-                            ),
-                          ),
-                        ),
-                      ],
+                    const SizedBox(height: 10),
+
+                    _buildPassword(_password, "Password", _obscurePassword, () {
+                      setState(() => _obscurePassword = !_obscurePassword);
+                    }),
+
+                    _buildPassword(
+                      _confirmPassword,
+                      "Confirm Password",
+                      _obscureConfirm,
+                      () {
+                        setState(() => _obscureConfirm = !_obscureConfirm);
+                      },
+                      validator:
+                          (v) =>
+                              v == _password.text
+                                  ? null
+                                  : "Passwords do not match",
+                    ),
+
+                    const SizedBox(height: 20),
+
+                    ElevatedButton(
+                      onPressed: _isLoading ? null : _signup,
+                      child:
+                          _isLoading
+                              ? const CircularProgressIndicator(
+                                color: Colors.white,
+                              )
+                              : const Text("Sign Up"),
+                    ),
+
+                    const SizedBox(height: 10),
+
+                    TextButton(
+                      onPressed: () {
+                        Navigator.pushReplacementNamed(context, '/signin');
+                      },
+                      child: const Text("Already have an account? Sign in"),
                     ),
                   ],
                 ),
@@ -462,108 +212,45 @@ class _SignupState extends State<Signup> {
     );
   }
 
-  // ── Text field styled to match Figma borders ──
-  Widget _buildField({
-    required TextEditingController controller,
-    required String label,
+  Widget _buildField(
+    TextEditingController controller,
+    String label, {
     TextInputType keyboardType = TextInputType.text,
-    String? Function(String?)? validator,
   }) {
-    return TextFormField(
-      controller: controller,
-      keyboardType: keyboardType,
-      validator: validator,
-      style: const TextStyle(
-        fontFamily: 'Inter',
-        fontSize: 14,
-        color: Color(0xFF0D5C63),
-      ),
-      decoration: InputDecoration(
-        labelText: label,
-        labelStyle: const TextStyle(
-          fontFamily: 'Inter',
-          fontSize: 14,
-          color: Color(0xFF0D5C63),
-        ),
-        filled: true,
-        fillColor: const Color(0xFFFFFFFA),
-        contentPadding: const EdgeInsets.symmetric(
-          vertical: 16,
-          horizontal: 16,
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
-          borderSide: const BorderSide(color: Color(0xFF247B7B)),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
-          borderSide: const BorderSide(color: Color(0xFF0D5C63), width: 1.5),
-        ),
-        errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
-          borderSide: const BorderSide(color: Colors.red),
-        ),
-        focusedErrorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
-          borderSide: const BorderSide(color: Colors.red),
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 6),
+      child: TextFormField(
+        controller: controller,
+        keyboardType: keyboardType,
+        validator: (v) => v!.isEmpty ? "Required" : null,
+        decoration: InputDecoration(
+          labelText: label,
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
         ),
       ),
     );
   }
 
-  // ── Password field with show/hide toggle ──
-  Widget _buildPasswordField({
-    required TextEditingController controller,
-    required String label,
-    required bool obscure,
-    required VoidCallback toggleObscure,
+  Widget _buildPassword(
+    TextEditingController controller,
+    String label,
+    bool obscure,
+    VoidCallback toggle, {
     String? Function(String?)? validator,
   }) {
-    return TextFormField(
-      controller: controller,
-      obscureText: obscure,
-      validator: validator,
-      style: const TextStyle(
-        fontFamily: 'Inter',
-        fontSize: 14,
-        color: Color(0xFF0D5C63),
-      ),
-      decoration: InputDecoration(
-        labelText: label,
-        labelStyle: const TextStyle(
-          fontFamily: 'Inter',
-          fontSize: 14,
-          color: Color(0xFF0D5C63),
-        ),
-        filled: true,
-        fillColor: const Color(0xFFFFFFFA),
-        contentPadding: const EdgeInsets.symmetric(
-          vertical: 16,
-          horizontal: 16,
-        ),
-        suffixIcon: IconButton(
-          icon: Icon(
-            obscure ? Icons.visibility_off_outlined : Icons.visibility_outlined,
-            color: const Color(0xFF247B7B),
-            size: 20,
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 6),
+      child: TextFormField(
+        controller: controller,
+        obscureText: obscure,
+        validator: validator ?? (v) => v!.isEmpty ? "Required" : null,
+        decoration: InputDecoration(
+          labelText: label,
+          suffixIcon: IconButton(
+            icon: Icon(obscure ? Icons.visibility_off : Icons.visibility),
+            onPressed: toggle,
           ),
-          onPressed: toggleObscure,
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
-          borderSide: const BorderSide(color: Color(0xFF247B7B)),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
-          borderSide: const BorderSide(color: Color(0xFF0D5C63), width: 1.5),
-        ),
-        errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
-          borderSide: const BorderSide(color: Colors.red),
-        ),
-        focusedErrorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
-          borderSide: const BorderSide(color: Colors.red),
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
         ),
       ),
     );

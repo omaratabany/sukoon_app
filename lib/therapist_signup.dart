@@ -136,7 +136,7 @@ class _PartnerSignupState extends State<therapist_signup> {
             child: SafeArea(
               child: Center(
                 child: Image.asset(
-                  "images/logo_white.png",
+                  'lib/images/logo_2.png',
                   errorBuilder: (context, error, stackTrace) {
                     return const Text(
                       "Logo not found",

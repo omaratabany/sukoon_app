@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'config.dart';
 
 class TherapistProfile extends StatefulWidget {
   final int therapistId;
@@ -38,7 +37,7 @@ class _TherapistProfileState extends State<TherapistProfile> {
     try {
       print("Fetching therapist ID: ${widget.therapistId}");
       final url =
-          "${Config.server}/therapist_profile.php?id=${widget.therapistId}";
+          "http://localhost/sukoon_website/therapist/therapist_profile.php?id=${widget.therapistId}";
       print("URL: $url");
 
       final response = await http

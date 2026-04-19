@@ -1,29 +1,27 @@
 import 'package:flutter/material.dart';
-import 'package:sukoon_app/Signin.dart';
-import 'package:sukoon_app/therapist_form.dart';
-import 'package:sukoon_app/therapist_signin.dart';
-import 'package:sukoon_app/therapist_signup.dart';
-import 'package:sukoon_app/therapists.dart';
-import 'package:sukoon_app/userhome.dart';
+import 'splash_screen.dart';
+import 'Signin.dart';
 import 'Signup.dart';
+import 'userhome.dart';
 
 void main() {
-  runApp(const MyWidget());
+  runApp(const MyApp());
 }
 
-class MyWidget extends StatefulWidget {
-  const MyWidget({super.key});
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
 
-  @override
-  State<MyWidget> createState() => _MyWidgetState();
-}
-
-class _MyWidgetState extends State<MyWidget> {
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: SukoonHomePage(),
+      initialRoute: '/',
+      routes: {
+        '/': (context) => const SplashScreen(),
+        '/signin': (context) => const Signin(),
+        '/signup': (context) => const Signup(),
+        '/home': (context) => const UserHome(),
+      },
     );
   }
 }

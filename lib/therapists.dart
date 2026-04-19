@@ -79,7 +79,7 @@ class _TherapistsPageState extends State<Therapists> {
               children: [
                 // Logo
                 Image.asset(
-                  'images/logo_white.png',
+                  'lib/images/logo_2.png',
                   height: 40,
                   errorBuilder:
                       (_, __, ___) => Container(

@@ -174,7 +174,7 @@ class _AddAppointmentState extends State<AddAppointment> {
             child: SafeArea(
               child: Center(
                 child: Image.asset(
-                  "images/logo_white.png",
+                  'lib/images/logo_2.png',
                   width: 130,
                   height: 130,
                   fit: BoxFit.contain,

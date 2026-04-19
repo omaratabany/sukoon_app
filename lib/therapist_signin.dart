@@ -4,7 +4,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sukoon_app/therapist_form.dart';
 import 'package:sukoon_app/therapist_home.dart';
 import 'dart:convert';
-import 'config.dart';
 import 'signup.dart';
 import 'userhome.dart';
 
@@ -214,7 +213,7 @@ class _SigninState extends State<therapist_signin> {
             child: SafeArea(
               child: Center(
                 child: Image.asset(
-                  "images/logo_white.png",
+                  'lib/images/logo_2.png',
                   width: 184,
                   height: 184,
                   fit: BoxFit.contain,

@@ -56,7 +56,7 @@ class _TherapistHomePageState extends State<TherapistHomePage>
   // ── Data Loading ───────────────────────────
   Future<void> _loadTherapistInfo() async {
     final prefs = await SharedPreferences.getInstance();
-    final name = prefs.getString('user_name') ?? "Therapist";
+    final name = prefs.getString('username') ?? "Therapist";
     if (mounted) setState(() => _therapistName = name);
   }
 
@@ -182,7 +182,7 @@ class _TherapistHomePageState extends State<TherapistHomePage>
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Image.asset(
-                    "images/logo_white.png",
+                    'lib/images/logo_2.png',
                     width: 80,
                     height: 80,
                     fit: BoxFit.contain,
