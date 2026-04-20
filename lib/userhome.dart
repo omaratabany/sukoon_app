@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'therapists.dart';
 
 // COLORS
 class SukoonColors {
@@ -12,9 +11,14 @@ class SukoonColors {
 }
 
 // HOME
-class UserHome extends StatelessWidget {
+class UserHome extends StatefulWidget {
   const UserHome({super.key});
 
+  @override
+  State<UserHome> createState() => _UserHomeState();
+}
+
+class _UserHomeState extends State<UserHome> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -68,46 +72,19 @@ class UserHome extends StatelessWidget {
 
             const SizedBox(height: 25),
 
-            _buildSection(
-              context,
-              'Therapists',
-              const [
-                (Color(0xFF0D5C63), Color(0xFF44A1A0), Icons.psychology_outlined),
-                (Color(0xFF247B7B), Color(0xFF78CDD7), Icons.groups_outlined),
-                (
-                  Color(0xFF44A1A0),
-                  Color(0xFF0D5C63),
-                  Icons.volunteer_activism_outlined,
-                ),
-              ],
-              onTitleTap: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute<void>(
-                    builder: (context) => const Therapists(),
-                  ),
-                );
-              },
-            ),
+            _buildSection('Therapists', [
+              'assets/images/talking1.jpg',
+              'assets/images/talking2.jpg',
+              'assets/images/talking3.jpg',
+            ]),
 
             const SizedBox(height: 25),
 
-            _buildSection(
-              context,
-              'Activities',
-              const [
-                (Color(0xFF0A3D42), Color(0xFF44A1A0), Icons.spa_outlined),
-                (
-                  Color(0xFF247B7B),
-                  Color(0xFF44A1A0),
-                  Icons.self_improvement_outlined,
-                ),
-                (
-                  Color(0xFF44A1A0),
-                  Color(0xFF78CDD7),
-                  Icons.nature_people_outlined,
-                ),
-              ],
-            ),
+            _buildSection('Activities', [
+              'assets/images/activity1.jpg',
+              'assets/images/activity2.jpg',
+              'assets/images/activity3.jpg',
+            ]),
 
             const SizedBox(height: 30),
           ],
@@ -116,36 +93,20 @@ class UserHome extends StatelessWidget {
     );
   }
 
-  Widget _buildSection(
-    BuildContext context,
-    String title,
-    List<(Color, Color, IconData)> tiles, {
-    VoidCallback? onTitleTap,
-  }) {
-    final titleStyle = const TextStyle(
-      fontSize: 20,
-      fontWeight: FontWeight.bold,
-      color: SukoonColors.deep,
-    );
-
+  Widget _buildSection(String title, List<String> images) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: onTitleTap == null
-              ? Text(title, style: titleStyle)
-              : Material(
-                  color: Colors.transparent,
-                  child: InkWell(
-                    onTap: onTitleTap,
-                    borderRadius: BorderRadius.circular(6),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 4),
-                      child: Text(title, style: titleStyle),
-                    ),
-                  ),
-                ),
+          child: Text(
+            title,
+            style: const TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: SukoonColors.deep,
+            ),
+          ),
         ),
 
         const SizedBox(height: 12),
@@ -155,19 +116,13 @@ class UserHome extends StatelessWidget {
           child: ListView.separated(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             scrollDirection: Axis.horizontal,
-            itemCount: tiles.length,
+            itemCount: images.length,
             separatorBuilder: (_, __) => const SizedBox(width: 12),
             itemBuilder: (context, i) {
-              final (c1, c2, icon) = tiles[i];
               return Container(
                 width: 140,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(18),
-                  gradient: LinearGradient(
-                    colors: [c1, c2],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
                   boxShadow: [
                     BoxShadow(
                       color: Colors.black.withOpacity(0.08),
@@ -176,10 +131,26 @@ class UserHome extends StatelessWidget {
                     ),
                   ],
                 ),
-                child: Icon(
-                  icon,
-                  color: Colors.white.withOpacity(0.95),
-                  size: 48,
+                clipBehavior: Clip.antiAlias,
+                child: Image.asset(
+                  images[i],
+                  fit: BoxFit.cover,
+                  width: 140,
+                  height: 170,
+                  errorBuilder: (_, __, ___) => Container(
+                    width: 140,
+                    height: 170,
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [
+                          SukoonColors.teal,
+                          SukoonColors.mid,
+                        ],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                    ),
+                  ),
                 ),
               );
             },
