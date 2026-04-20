@@ -70,10 +70,13 @@ class _AddAppointmentState extends State<AddAppointment> {
     final dateStr =
         "${_selectedDate!.year}-${_selectedDate!.month.toString().padLeft(2, '0')}-${_selectedDate!.day.toString().padLeft(2, '0')}";
 
-    print("→ Submitting appointment → $url");
-    print(
-      "→ date: $dateStr, fee: ${_feeController.text}, duration: ${_durationController.text}, therapist_id: $therapistId",
-    );
+    assert(() {
+      debugPrint("→ Submitting appointment → $url");
+      debugPrint(
+        "→ date: $dateStr, fee: ${_feeController.text}, duration: ${_durationController.text}, therapist_id: $therapistId",
+      );
+      return true;
+    }());
 
     try {
       final response = await http
@@ -92,8 +95,11 @@ class _AddAppointmentState extends State<AddAppointment> {
           )
           .timeout(const Duration(seconds: 10));
 
-      print("← Status: ${response.statusCode}");
-      print("← Body: ${response.body}");
+      assert(() {
+        debugPrint("← Status: ${response.statusCode}");
+        debugPrint("← Body: ${response.body}");
+        return true;
+      }());
 
       if (!mounted) return;
 
@@ -126,7 +132,7 @@ class _AddAppointmentState extends State<AddAppointment> {
         );
       }
     } catch (e) {
-      print("Exception: $e");
+      debugPrint("Exception: $e");
       if (mounted) {
         _showSnackBar("Connection failed: ${e.toString()}", isError: true);
       }
@@ -255,10 +261,12 @@ class _AddAppointmentState extends State<AddAppointment> {
                       keyboardType: TextInputType.number,
                       textInputAction: TextInputAction.next,
                       validator: (value) {
-                        if (value == null || value.trim().isEmpty)
+                        if (value == null || value.trim().isEmpty) {
                           return "Please enter session fee";
-                        if (double.tryParse(value.trim()) == null)
+                        }
+                        if (double.tryParse(value.trim()) == null) {
                           return "Enter a valid number";
+                        }
                         return null;
                       },
                       decoration: _inputStyle("Session Fee"),

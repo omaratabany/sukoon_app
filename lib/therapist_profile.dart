@@ -35,17 +35,17 @@ class _TherapistProfileState extends State<TherapistProfile> {
     });
 
     try {
-      print("Fetching therapist ID: ${widget.therapistId}");
+      debugPrint("Fetching therapist ID: ${widget.therapistId}");
       final url =
           "http://localhost/sukoon_website/therapist/therapist_profile.php?id=${widget.therapistId}";
-      print("URL: $url");
+      debugPrint("URL: $url");
 
       final response = await http
           .get(Uri.parse(url), headers: {'Accept': 'application/json'})
           .timeout(const Duration(seconds: 10));
 
-      print("Response status: ${response.statusCode}");
-      print("Response body: ${response.body}");
+      debugPrint("Response status: ${response.statusCode}");
+      debugPrint("Response body: ${response.body}");
 
       if (!mounted) return;
 
@@ -73,7 +73,7 @@ class _TherapistProfileState extends State<TherapistProfile> {
         setState(() => _errorMessage = 'Server error: ${response.statusCode}');
       }
     } catch (e) {
-      print("Connection error: $e");
+      debugPrint("Connection error: $e");
       if (mounted) setState(() => _errorMessage = 'Connection error: $e');
     } finally {
       if (mounted) setState(() => _isLoading = false);
@@ -95,8 +95,9 @@ class _TherapistProfileState extends State<TherapistProfile> {
     }
     if (widget.therapistName.isNotEmpty) {
       final parts = widget.therapistName.split(' ');
-      if (parts.length >= 2)
+      if (parts.length >= 2) {
         return '${parts[0][0]}${parts[1][0]}'.toUpperCase();
+      }
       if (parts.isNotEmpty) return parts[0].substring(0, 1).toUpperCase();
     }
     return 'DR';
@@ -115,7 +116,6 @@ class _TherapistProfileState extends State<TherapistProfile> {
       _therapist['specialty'] ?? _therapist['certificate'] ?? 'Therapist';
   String _getWorkplace() => _therapist['workplace'] ?? 'Private Practice';
   String _getEmail() => _therapist['email'] ?? '—';
-  String _getPhone() => _therapist['phone'] ?? '—';
   String _getCertificate() => _therapist['certificate'] ?? '—';
   String _getLanguage() => _therapist['language'] ?? 'Arabic';
 
@@ -287,14 +287,8 @@ class _TherapistProfileState extends State<TherapistProfile> {
                     _sectionCard(
                       title: 'Personal information',
                       child: _responsiveInfoFields(context, [
-                        _buildInfoItem(
-                          'Education',
-                          _getCertificate(),
-                        ),
-                        _buildInfoItem(
-                          'Extra knowledge',
-                          _getSpecialty(),
-                        ),
+                        _buildInfoItem('Education', _getCertificate()),
+                        _buildInfoItem('Extra knowledge', _getSpecialty()),
                         _buildInfoItem('Email', _getEmail()),
                       ]),
                     ),

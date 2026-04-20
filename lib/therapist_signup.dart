@@ -3,14 +3,14 @@ import 'package:http/http.dart' as http;
 import 'package:sukoon_app/Signup.dart';
 import 'dart:convert';
 
-class therapist_signup extends StatefulWidget {
-  const therapist_signup({super.key});
+class TherapistSignup extends StatefulWidget {
+  const TherapistSignup({super.key});
 
   @override
-  State<therapist_signup> createState() => _PartnerSignupState();
+  State<TherapistSignup> createState() => _PartnerSignupState();
 }
 
-class _PartnerSignupState extends State<therapist_signup> {
+class _PartnerSignupState extends State<TherapistSignup> {
   final GlobalKey<FormState> _form = GlobalKey<FormState>();
 
   // Therapist fields matching your database
@@ -51,7 +51,7 @@ class _PartnerSignupState extends State<therapist_signup> {
     setState(() => _isLoading = true);
 
     try {
-      print("Sending data to server...");
+      debugPrint("Sending data to server...");
 
       final response = await http.post(
         Uri.parse(
@@ -70,8 +70,8 @@ class _PartnerSignupState extends State<therapist_signup> {
         },
       );
 
-      print("Response status: ${response.statusCode}");
-      print("Response body: ${response.body}");
+      debugPrint("Response status: ${response.statusCode}");
+      debugPrint("Response body: ${response.body}");
 
       final data = jsonDecode(response.body);
 
@@ -86,13 +86,13 @@ class _PartnerSignupState extends State<therapist_signup> {
         if (!mounted) return;
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (_) => const therapist_signup()),
+          MaterialPageRoute(builder: (_) => const TherapistSignup()),
         );
       } else {
         _showSnackbar(data["message"], isError: true);
       }
     } catch (e) {
-      print("Connection error: $e");
+      debugPrint("Connection error: $e");
       _showSnackbar("Connection error. Please try again.", isError: true);
     } finally {
       if (mounted) setState(() => _isLoading = false);
@@ -294,8 +294,9 @@ class _PartnerSignupState extends State<therapist_signup> {
                           ),
                       validator: (v) {
                         if (v!.isEmpty) return "Please confirm password";
-                        if (v != _password.text)
+                        if (v != _password.text) {
                           return "Passwords do not match";
+                        }
                         return null;
                       },
                     ),

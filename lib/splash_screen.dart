@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'dart:async';
+import 'package:flutter/services.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -10,9 +10,9 @@ class SplashScreen extends StatefulWidget {
 
 class _SplashScreenState extends State<SplashScreen>
     with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-  late Animation<double> _fadeAnimation;
-  late Animation<double> _scaleAnimation;
+  late final AnimationController _controller;
+  late final Animation<double> _fade;
+  late final Animation<double> _scale;
 
   @override
   void initState() {
@@ -20,22 +20,23 @@ class _SplashScreenState extends State<SplashScreen>
 
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(seconds: 2),
+      duration: const Duration(milliseconds: 900),
     );
 
-    _fadeAnimation = CurvedAnimation(parent: _controller, curve: Curves.easeIn);
+    _fade = CurvedAnimation(parent: _controller, curve: Curves.easeIn);
+    _scale = Tween<double>(begin: 0.85, end: 1.0)
+        .animate(CurvedAnimation(parent: _controller, curve: Curves.easeOut));
 
-    _scaleAnimation = Tween<double>(
-      begin: 0.8,
-      end: 1,
-    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeOut));
-
-    _controller.forward();
-
-    Timer(const Duration(seconds: 3), () {
+    // Defer start until after first frame to avoid jank
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
-
-      Navigator.pushReplacementNamed(context, '/signin');
+      _controller.forward().then((_) {
+        if (!mounted) return;
+        Future.delayed(const Duration(milliseconds: 1200), () {
+          if (!mounted) return;
+          Navigator.pushReplacementNamed(context, '/signin');
+        });
+      });
     });
   }
 
@@ -47,32 +48,29 @@ class _SplashScreenState extends State<SplashScreen>
 
   @override
   Widget build(BuildContext context) {
+    // Lock status bar to light icons on the teal background
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.light);
+
     return Scaffold(
       body: Container(
-        width: double.infinity,
-        height: double.infinity,
         decoration: const BoxDecoration(
           gradient: LinearGradient(
-            colors: [Color(0xFF0D5C63), Color(0xFF247B7B), Color(0xFF44A1A0)],
+            colors: [Color(0xFF0A3D42), Color(0xFF0D5C63), Color(0xFF44A1A0)],
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
           ),
         ),
         child: Center(
           child: FadeTransition(
-            opacity: _fadeAnimation,
+            opacity: _fade,
             child: ScaleTransition(
-              scale: _scaleAnimation,
+              scale: _scale,
               child: Image.asset(
                 'lib/images/logo_2.png',
-                width: 180,
-                height: 180,
-                errorBuilder:
-                    (_, __, ___) => const Icon(
-                      Icons.image_not_supported,
-                      color: Colors.white,
-                      size: 80,
-                    ),
+                width: 160,
+                height: 160,
+                filterQuality: FilterQuality.medium,
+                errorBuilder: (_, __, ___) => const _LogoText(),
               ),
             ),
           ),
@@ -80,4 +78,33 @@ class _SplashScreenState extends State<SplashScreen>
       ),
     );
   }
+}
+
+class _LogoText extends StatelessWidget {
+  const _LogoText();
+
+  @override
+  Widget build(BuildContext context) => const Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            'سُكُون',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 42,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          SizedBox(height: 6),
+          Text(
+            'SUKOON',
+            style: TextStyle(
+              color: Colors.white70,
+              fontSize: 16,
+              letterSpacing: 5,
+              fontWeight: FontWeight.w300,
+            ),
+          ),
+        ],
+      );
 }

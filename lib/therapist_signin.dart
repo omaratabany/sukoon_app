@@ -1,20 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:sukoon_app/therapist_form.dart';
 import 'package:sukoon_app/therapist_home.dart';
 import 'dart:convert';
 import 'signup.dart';
-import 'userhome.dart';
 
-class therapist_signin extends StatefulWidget {
-  const therapist_signin({super.key});
+class TherapistSignin extends StatefulWidget {
+  const TherapistSignin({super.key});
 
   @override
-  State<therapist_signin> createState() => _SigninState();
+  State<TherapistSignin> createState() => _SigninState();
 }
 
-class _SigninState extends State<therapist_signin> {
+class _SigninState extends State<TherapistSignin> {
   final GlobalKey<FormState> _form = GlobalKey<FormState>();
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
@@ -36,8 +34,8 @@ class _SigninState extends State<therapist_signin> {
 
     final url =
         "http://localhost/sukoon_website/therapist/therapist_signin.php";
-    print("→ Attempting login → $url");
-    print("→ Username: ${_usernameController.text.trim()}");
+    debugPrint("→ Attempting login → $url");
+    debugPrint("→ Username: ${_usernameController.text.trim()}");
 
     try {
       final response = await http
@@ -54,15 +52,15 @@ class _SigninState extends State<therapist_signin> {
           )
           .timeout(const Duration(seconds: 10));
 
-      print("← Status: ${response.statusCode}");
-      print("← Response body: ${response.body}");
-      print("← Response length: ${response.body.length}");
+      debugPrint("← Status: ${response.statusCode}");
+      debugPrint("← Response body: ${response.body}");
+      debugPrint("← Response length: ${response.body.length}");
 
       if (!mounted) return;
 
       // Check if response is HTML (error page)
       if (response.body.trim().startsWith('<')) {
-        print("!!! ERROR: Server returned HTML instead of JSON !!!");
+        debugPrint("!!! ERROR: Server returned HTML instead of JSON !!!");
         _showSnackBar(
           "Server error: Received HTML instead of JSON",
           isError: true,
@@ -80,18 +78,18 @@ class _SigninState extends State<therapist_signin> {
       try {
         data = jsonDecode(response.body);
       } catch (e) {
-        print("JSON parse failed: $e");
-        print("Raw response: ${response.body}");
+        debugPrint("JSON parse failed: $e");
+        debugPrint("Raw response: ${response.body}");
         _showSnackBar("Invalid response from server", isError: true);
         return;
       }
 
       // DEBUG: Print all fields with their types
-      print("=== RECEIVED DATA TYPES ===");
+      debugPrint("=== RECEIVED DATA TYPES ===");
       data.forEach((key, value) {
-        print("Field: $key, Value: $value, Type: ${value.runtimeType}");
+        debugPrint("Field: $key, Value: $value, Type: ${value.runtimeType}");
       });
-      print("===========================");
+      debugPrint("===========================");
 
       if (data['status'] == null) {
         _showSnackBar("Unexpected response format", isError: true);
@@ -125,13 +123,13 @@ class _SigninState extends State<therapist_signin> {
         String language = data['language']?.toString() ?? '';
 
         // Print what we're saving
-        print("=== SAVING TO SHARED PREFERENCES ===");
-        print("  user_id: $userId (${userId.runtimeType})");
-        print("  username: $username");
-        print("  email: $email");
-        print("  firstname: $firstname");
-        print("  lastname: $lastname");
-        print("====================================");
+        debugPrint("=== SAVING TO SHARED PREFERENCES ===");
+        debugPrint("  user_id: $userId (${userId.runtimeType})");
+        debugPrint("  username: $username");
+        debugPrint("  email: $email");
+        debugPrint("  firstname: $firstname");
+        debugPrint("  lastname: $lastname");
+        debugPrint("====================================");
 
         // Save to SharedPreferences
         await prefs.setInt('user_id', userId);
@@ -163,7 +161,7 @@ class _SigninState extends State<therapist_signin> {
         );
       }
     } catch (e) {
-      print("Login exception: $e");
+      debugPrint("Login exception: $e");
       if (mounted) {
         _showSnackBar("Connection failed: ${e.toString()}", isError: true);
       }
@@ -441,7 +439,7 @@ class _SigninState extends State<therapist_signin> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: const Color(0xFF0D5C63).withOpacity(0.3)),
+        border: Border.all(color: const Color(0xFF0D5C63).withValues(alpha: 0.3)),
       ),
       child: Padding(
         padding: const EdgeInsets.all(12),

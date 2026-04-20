@@ -196,7 +196,7 @@ class _TherapistHomePageState extends State<TherapistHomePage>
                   // Notification bell (cosmetic; wire up as needed)
                   Container(
                     decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.15),
+                      color: Colors.white.withValues(alpha: 0.15),
                       shape: BoxShape.circle,
                     ),
                     child: IconButton(
@@ -214,7 +214,7 @@ class _TherapistHomePageState extends State<TherapistHomePage>
               Text(
                 "Welcome back,",
                 style: TextStyle(
-                  color: Colors.white.withOpacity(0.85),
+                  color: Colors.white.withValues(alpha: 0.85),
                   fontSize: 15,
                   fontFamily: 'Inter',
                   fontWeight: FontWeight.w400,
@@ -238,7 +238,7 @@ class _TherapistHomePageState extends State<TherapistHomePage>
                   vertical: 6,
                 ),
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.18),
+                  color: Colors.white.withValues(alpha: 0.18),
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Text(
@@ -389,7 +389,7 @@ class _TherapistHomePageState extends State<TherapistHomePage>
           children: [
             Icon(
               Icons.event_busy_rounded,
-              color: _lightTeal.withOpacity(0.5),
+              color: _lightTeal.withValues(alpha: 0.5),
               size: 64,
             ),
             const SizedBox(height: 16),
@@ -406,7 +406,7 @@ class _TherapistHomePageState extends State<TherapistHomePage>
             Text(
               "Add an appointment to get started",
               style: TextStyle(
-                color: _midTeal.withOpacity(0.7),
+                color: _midTeal.withValues(alpha: 0.7),
                 fontFamily: 'Inter',
                 fontSize: 14,
               ),
@@ -467,10 +467,10 @@ class _ActionCard extends StatelessWidget {
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: color.withOpacity(0.25)),
+          border: Border.all(color: color.withValues(alpha: 0.25)),
           boxShadow: [
             BoxShadow(
-              color: color.withOpacity(0.10),
+              color: color.withValues(alpha: 0.10),
               blurRadius: 16,
               offset: const Offset(0, 6),
             ),
@@ -481,7 +481,7 @@ class _ActionCard extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
-                color: color.withOpacity(0.10),
+                color: color.withValues(alpha: 0.10),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Icon(icon, color: color, size: 24),
@@ -531,10 +531,10 @@ class _BookingCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: const Color(0xFF247B7B).withOpacity(0.15)),
+        border: Border.all(color: const Color(0xFF247B7B).withValues(alpha: 0.15)),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF0D5C63).withOpacity(0.07),
+            color: const Color(0xFF0D5C63).withValues(alpha: 0.07),
             blurRadius: 14,
             offset: const Offset(0, 5),
           ),
@@ -556,7 +556,7 @@ class _BookingCard extends StatelessWidget {
                         radius: 18,
                         backgroundColor: const Color(
                           0xFF44A1A0,
-                        ).withOpacity(0.15),
+                        ).withValues(alpha: 0.15),
                         child: Text(
                           patientName.isNotEmpty
                               ? patientName[0].toUpperCase()
@@ -661,23 +661,6 @@ class _InfoChip extends StatelessWidget {
           ),
         ),
       ],
-    );
-  }
-}
-
-// ─────────────────────────────────────────────
-//  Placeholder — replace with your AddAppointment import
-// ─────────────────────────────────────────────
-class _AddAppointmentPlaceholder extends StatelessWidget {
-  const _AddAppointmentPlaceholder();
-
-  @override
-  Widget build(BuildContext context) {
-    // TODO: Replace this entire widget with:
-    // import 'add_appointment.dart';
-    // and use AddAppointment() directly in the Navigator.push above.
-    return const Scaffold(
-      body: Center(child: Text("AddAppointment widget goes here")),
     );
   }
 }
